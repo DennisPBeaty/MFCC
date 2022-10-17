@@ -1,23 +1,30 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plot
 from scipy.io import wavfile
-from python_speech_features import mfcc, logfbank
+import python_speech_features
 import os
+import logging
+import warnings
 
-script_dir = os.path.dirname(__file__)
-rel_path = "A_logs\\1.wav"
-abs_file_path = os.path.join(script_dir, rel_path)
-frequency_sampling, audio_signal = wavfile.read(abs_file_path)
+warnings.filterwarnings("ignore")
+logging.getLogger().setLevel(logging.ERROR)
 
-audio_signal = audio_signal[:15000]
+keys = ["A", "S", "D", "Space"]
 
-features_mfcc = mfcc(audio_signal, frequency_sampling)
+for key in keys:
+    for i in range(1,21):
+        script_dir = os.path.dirname(__file__)
+        rel_path = key + "_logs\\" + str(i) + ".wav"
+        abs_file_path = os.path.join(script_dir, rel_path)
+        freq_data, audio_data = wavfile.read(abs_file_path)
 
-print('\nMFCC:\nNumber of windows =', features_mfcc.shape[0])
-print('Length of each feature =', features_mfcc.shape[1])
+        audio_data = audio_data[:20000]
 
-features_mfcc = features_mfcc.T
-plt.matshow(features_mfcc)
-plt.title('MFCC')
+        mfcc_data = python_speech_features.mfcc(audio_data, freq_data)
 
-plt.show()
+        mfcc_data = mfcc_data.T
+        plot.matshow(mfcc_data)
+        plot.title('MFCC')
+
+        plot.savefig("outputs\\" + key + "_data\\" + str(i) + ".png")
+        plot.close()
